@@ -17,37 +17,50 @@ namespace SimpleChat
         private Vector3 initialLocalScale = new Vector3(1, 1, 1);
 
         private RectTransform clonedMessageRectTransform;
+        private InputField inputField;
 
         private void Start()
         {
-            GetComponent<InputField>().onEndEdit.AddListener(OnEndEdit);
+            inputField = GetComponent<InputField>();
+
+            // delegate を使って inputField を渡さなければ日本語に対応するための textComponent を参照できないため
+            // [x] inputField.onEndEdit.AddListener(OnEndEdit)
+            //     void OnEndEdit(string message)
+            // see: https://docs.unity3d.com/ja/2017.4/ScriptReference/UI.InputField-onEndEdit.html
+            inputField.onEndEdit.AddListener(delegate { OnEndEdit(inputField); });
         }
 
-        private void OnEndEdit(string message)
+        private void OnEndEdit(InputField input)
         {
-            // early return when only white-space
-            if (message.Trim().Equals(string.Empty)) {
+            // 全角だろうが空白のみは許容しない
+            if (input.textComponent.text.Trim().Equals(string.Empty)) {
                 return;
             }
 
-            AddMessageView(myMessageView, message);
+            // 日本語に対応するには textComponent から参照しなければならない
+            AddMessageView(myMessageView, input.textComponent.text);
         }
 
         private void AddMessageView(RectTransform messageView, string message)
         {
             var clonedMessageView = Instantiate<RectTransform>(messageView);
             clonedMessageRectTransform = clonedMessageView.GetComponent<RectTransform>();
+            // TODO: 絶対もっとうまい書き方がある
             clonedMessageRectTransform.GetChild(1).GetComponent<Text>().text = message;
-            // TODO: had better find component method
             clonedMessageRectTransform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = DateTime.Now.ToString("HH:mm");
             clonedMessageView.SetParent(chatLogContent);
 
-            // when SetParent execution, RectTransform is to be scaled automatically (0.5, 0.5, 0.5)
+            // SetParent 実行後、なぜか localScale が (0.5, 0.5, 0.5) に resize されてしまうので。
             clonedMessageRectTransform.localScale = initialLocalScale;
-            // sort order for new message
+            // 最新のコメントが一番上にくるように順序づけ
             clonedMessageView.SetAsFirstSibling();
             clonedMessageView.gameObject.SetActive(true);
-            GetComponent<InputField>().text = "";
+            ResetInputField();
+        }
+
+        private void ResetInputField()
+        {
+            inputField.text = "";
         }
     }
 }
