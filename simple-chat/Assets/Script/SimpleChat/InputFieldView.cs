@@ -13,11 +13,12 @@ namespace SimpleChat
         [SerializeField]
         private RectTransform chatLogContent;
 
-        private Vector3 renderPosition = new Vector3(0, 0, 0);
         private Vector3 initialLocalScale = new Vector3(1, 1, 1);
 
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
+
+        private readonly float margin = 15;
 
         private void Start()
         {
@@ -43,15 +44,21 @@ namespace SimpleChat
 
         private void AddMessageView(RectTransform messageView, string message)
         {
-            var clonedMessageView = Instantiate<RectTransform>(messageView);
-            clonedMessageRectTransform = clonedMessageView.GetComponent<RectTransform>();
-            // TODO: 絶対もっとうまい書き方がある
-            clonedMessageRectTransform.GetChild(1).GetComponent<Text>().text = message;
-            clonedMessageRectTransform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = DateTime.Now.ToString("HH:mm");
+            RectTransform clonedMessageView = Instantiate<RectTransform>(messageView);
+
+            // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
+            // 同様の理由で FindWithTag による参照もできないのでやむなし
+            clonedMessageView.GetChild(1).GetComponent<Text>().text = message;
+            clonedMessageView.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = CurrentDate();
             clonedMessageView.SetParent(chatLogContent);
 
             // SetParent 実行後、なぜか localScale が (0.5, 0.5, 0.5) に resize されてしまうので。
-            clonedMessageRectTransform.localScale = initialLocalScale;
+            clonedMessageView.localScale = initialLocalScale;
+            float h = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
+            float w = clonedMessageView.sizeDelta.x;
+            float padding = clonedMessageView.GetChild(1).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding + margin);
+
             // 最新のコメントが一番上にくるように順序づけ
             clonedMessageView.SetAsFirstSibling();
             clonedMessageView.gameObject.SetActive(true);
@@ -61,6 +68,11 @@ namespace SimpleChat
         private void ResetInputField()
         {
             inputField.text = "";
+        }
+
+        private string CurrentDate()
+        {
+            return DateTime.Now.ToString("HH:mm");
         }
     }
 }
