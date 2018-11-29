@@ -18,8 +18,6 @@ namespace SimpleChat
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
 
-        private readonly float margin = 15;
-
         private void Start()
         {
             inputField = GetComponent<InputField>();
@@ -57,7 +55,7 @@ namespace SimpleChat
             float h = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
             float w = clonedMessageView.sizeDelta.x;
             float padding = clonedMessageView.GetChild(1).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding + margin);
+            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding);
 
             // 最新のコメントが一番上にくるように順序づけ
             clonedMessageView.SetAsFirstSibling();
