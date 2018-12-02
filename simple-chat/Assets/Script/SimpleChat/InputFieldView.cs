@@ -47,7 +47,7 @@ namespace SimpleChat
             // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
             // 同様の理由で FindWithTag による参照もできないのでやむなし
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message;
-            clonedMessageView.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = CurrentDate();
+            clonedMessageView.GetChild(2).GetComponent<Text>().text = CurrentDate();
             clonedMessageView.SetParent(chatLogContent);
 
             // SetParent 実行後、なぜか localScale が (0.5, 0.5, 0.5) に resize されてしまうので。
