@@ -44,23 +44,42 @@ namespace SimpleChat
         {
             RectTransform clonedMessageView = Instantiate<RectTransform>(messageView);
 
+            SetTextInContent(clonedMessageView, message);
+            AdjustViewLayout(clonedMessageView);
+            SetLayoutOrder(clonedMessageView);
+            BeVisibleView(clonedMessageView);
+            ResetInputField();
+        }
+
+        private void SetTextInContent(RectTransform clonedMessageView, string message)
+        {
             // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
             // 同様の理由で FindWithTag による参照もできないのでやむなし
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message;
             clonedMessageView.GetChild(2).GetComponent<Text>().text = CurrentDate();
             clonedMessageView.SetParent(chatLogContent);
 
+        }
+
+        private void AdjustViewLayout(RectTransform clonedMessageView)
+        {
             // SetParent 実行後、なぜか localScale が (0.5, 0.5, 0.5) に resize されてしまうので。
             clonedMessageView.localScale = initialLocalScale;
             float h = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
             float w = clonedMessageView.sizeDelta.x;
             float padding = clonedMessageView.GetChild(1).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
             clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding);
+        }
 
+        private void SetLayoutOrder(RectTransform clonedMessageView)
+        {
             // 最新のコメントが一番上にくるように順序づけ
             clonedMessageView.SetAsFirstSibling();
+        }
+
+        private void BeVisibleView(RectTransform clonedMessageView)
+        {
             clonedMessageView.gameObject.SetActive(true);
-            ResetInputField();
         }
 
         private void ResetInputField()
