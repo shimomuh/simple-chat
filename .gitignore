@@ -49,3 +49,4 @@ sysinfo.txt #Unity3D Generated File On Crash Reports
 # ========== #
 */.vs/*
 */.vscode/*
+*/node_modules

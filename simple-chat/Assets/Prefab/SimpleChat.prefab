@@ -37,6 +37,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4866687580076400}
+  - component: {fileID: 114883736423182182}
   m_Layer: 0
   m_Name: SimpleChat
   m_TagString: Untagged
@@ -1009,7 +1010,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224641195875313880}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1129,6 +1130,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &114883736423182182
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1102894318632796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b4a7f9a35f047209663aa899506563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputField: {fileID: 114170488508315788}
 --- !u!114 &114902194793045128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1802,7 +1815,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.000015118479, y: -0.000033267894}
+  m_AnchoredPosition: {x: 0.000015118479, y: -0.000030618907}
   m_SizeDelta: {x: 336.99997, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &224885655645258730

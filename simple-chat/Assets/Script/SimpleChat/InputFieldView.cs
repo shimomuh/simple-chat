@@ -17,8 +17,9 @@ namespace SimpleChat
 
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
+        public InputField InputField { get { return inputField; }  }
 
-        private void Start()
+        public void Awake()
         {
             inputField = GetComponent<InputField>();
 
@@ -38,6 +39,11 @@ namespace SimpleChat
 
             // 日本語に対応するには textComponent から参照しなければならない
             AddMessageView(myMessageView, input.textComponent.text);
+        }
+
+        public void ReceiveMessage(string message)
+        {
+            AddMessageView(otherMessageView, message);
         }
 
         private void AddMessageView(RectTransform messageView, string message)
@@ -84,7 +90,7 @@ namespace SimpleChat
 
         private void ResetInputField()
         {
-            inputField.text = "";
+            inputField.text = string.Empty;
         }
 
         private string CurrentDate()
