@@ -47,6 +47,6 @@ sysinfo.txt #Unity3D Generated File On Crash Reports
 # ========== #
 # original   #
 # ========== #
-*/.vs/*
-*/.vscode/*
-*/node_modules
+**/.vs/*
+**/.vscode/*
+**/node_modules
