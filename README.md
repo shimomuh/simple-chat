@@ -6,7 +6,7 @@
 ```bash
 brew install ndenv
 ndenv install v10.5.0
-cd server
+cd server/nodejs
 npm i
 node server.js
 ```
