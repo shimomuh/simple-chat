@@ -1,1 +1,0 @@
-﻿namespace SimpleChat.UI.View {}
