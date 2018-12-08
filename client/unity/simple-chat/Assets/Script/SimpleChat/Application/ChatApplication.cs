@@ -1,8 +1,10 @@
 ﻿using System.Threading;
+using SimpleChat.UI;
+using SimpleChat.UI.View;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SimpleChat
+namespace SimpleChat.Application
 {
     public class ChatApplication : MonoBehaviour
     {

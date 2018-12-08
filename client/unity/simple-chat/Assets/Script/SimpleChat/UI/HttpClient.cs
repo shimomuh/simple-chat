@@ -2,7 +2,7 @@
 using UnityEngine;
 using WebSocketSharp;
 
-namespace SimpleChat
+namespace SimpleChat.UI
 {
     // TODO: シングルトン化
     public class HttpClient
