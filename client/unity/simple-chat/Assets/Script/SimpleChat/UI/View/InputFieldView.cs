@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SimpleChat
+namespace SimpleChat.UI.View
 {
     /// <summary>
     /// InputField に付与されるクラス。
@@ -17,9 +17,6 @@ namespace SimpleChat
         private RectTransform myMessageView;
         [SerializeField]
         private RectTransform chatLogContent;
-
-        // 位置を微調整するために必要
-        private Vector3 initialLocalScale = new Vector3(1, 1, 1);
 
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
@@ -99,7 +96,9 @@ namespace SimpleChat
             // 同様の理由で FindWithTag による参照もできないのでやむなし
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message;
             clonedMessageView.GetChild(2).GetComponent<Text>().text = CurrentTime();
-            clonedMessageView.SetParent(chatLogContent);
+            // 第二引数を true にすると、 scale が resize されてしまうので false に。
+            // see: https://docs.unity3d.com/ScriptReference/Transform.SetParent.html
+            clonedMessageView.SetParent(chatLogContent, false);
 
         }
 
@@ -109,8 +108,6 @@ namespace SimpleChat
         /// <param name="clonedMessageView">Cloned message view.</param>
         private void AdjustViewLayout(RectTransform clonedMessageView)
         {
-            // SetParent 実行後、なぜか localScale が (0.5, 0.5, 0.5) に resize されてしまうので。
-            clonedMessageView.localScale = initialLocalScale;
             float h = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
             float w = clonedMessageView.sizeDelta.x;
             float padding = clonedMessageView.GetChild(1).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
