@@ -94,8 +94,8 @@ namespace SimpleChat.UI.View
         {
             // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
             // 同様の理由で FindWithTag による参照もできないのでやむなし
-            clonedMessageView.GetChild(1).GetComponent<Text>().text = message;
-            clonedMessageView.GetChild(2).GetComponent<Text>().text = CurrentTime();
+            clonedMessageView.GetChild(2).GetComponent<Text>().text = message;
+            clonedMessageView.GetChild(3).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
             // see: https://docs.unity3d.com/ScriptReference/Transform.SetParent.html
             clonedMessageView.SetParent(chatLogContent, false);
@@ -108,9 +108,9 @@ namespace SimpleChat.UI.View
         /// <param name="clonedMessageView">Cloned message view.</param>
         private void AdjustViewLayout(RectTransform clonedMessageView)
         {
-            float h = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
+            float h = clonedMessageView.GetChild(2).GetComponent<Text>().preferredHeight;
             float w = clonedMessageView.sizeDelta.x;
-            float padding = clonedMessageView.GetChild(1).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+            float padding = clonedMessageView.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
             clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding);
         }
 
