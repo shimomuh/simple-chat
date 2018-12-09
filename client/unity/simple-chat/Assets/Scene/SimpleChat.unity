@@ -218,6 +218,21 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 224860188011621126, guid: 3c281ca236b0c4aafa573751323c1b7c,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -148.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 224860188011621126, guid: 3c281ca236b0c4aafa573751323c1b7c,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 280.00006
+      objectReference: {fileID: 0}
+    - target: {fileID: 114260843362999196, guid: 3c281ca236b0c4aafa573751323c1b7c,
+        type: 2}
+      propertyPath: m_Horizontal
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c281ca236b0c4aafa573751323c1b7c, type: 2}
   m_IsPrefabAsset: 0
