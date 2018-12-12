@@ -120,8 +120,8 @@ namespace SimpleChat.UI.View
         /// <param name="clonedMessageView">Cloned message view.</param>
         private void SetLayoutOrder(RectTransform clonedMessageView)
         {
-            // 最新のコメントが一番上にくるように順序づけ
-            clonedMessageView.SetAsFirstSibling();
+            // 最新のコメントが一番下にくるように順序づけ
+            clonedMessageView.SetAsLastSibling();
         }
 
         /// <summary>
