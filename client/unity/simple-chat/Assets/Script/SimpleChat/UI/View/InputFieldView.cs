@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,8 +21,11 @@ namespace SimpleChat.UI.View
 
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
+        private Text messageText;
 
         public Action<string> InputMessageCallback = null;
+
+        private static readonly int MaxByteInOneLine = 24;
 
         #region LifeCycleMethods
 
@@ -78,6 +82,8 @@ namespace SimpleChat.UI.View
         {
             RectTransform clonedMessageView = Instantiate<RectTransform>(messageView);
 
+            // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
+            // 同様の理由で FindWithTag による参照もできないのでやむなし
             SetTextInContent(clonedMessageView, message);
             AdjustViewLayout(clonedMessageView);
             SetLayoutOrder(clonedMessageView);
@@ -92,9 +98,8 @@ namespace SimpleChat.UI.View
         /// <param name="message">Message.</param>
         private void SetTextInContent(RectTransform clonedMessageView, string message)
         {
-            // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
-            // 同様の理由で FindWithTag による参照もできないのでやむなし
-            clonedMessageView.GetChild(2).GetComponent<Text>().text = message;
+            messageText = clonedMessageView.GetChild(2).GetComponent<Text>();
+            messageText.text = AutoInsertNewLine(message);
             clonedMessageView.GetChild(2).GetChild(1).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
             // see: https://docs.unity3d.com/ScriptReference/Transform.SetParent.html
@@ -148,6 +153,36 @@ namespace SimpleChat.UI.View
         private string CurrentTime()
         {
             return DateTime.Now.ToString("HH:mm");
+        }
+
+        /// <summary>
+        /// 自動で改行を施す
+        /// </summary>
+        /// <returns>The insert new line.</returns>
+        /// <param name="message">Message.</param>
+        private string AutoInsertNewLine(string message)
+        {
+            string result = "";
+            char[] words = message.ToCharArray();
+            int currentLineByte = 0;
+
+            if(message.Contains("\n")) {
+                messageText.alignment = TextAnchor.UpperLeft;
+            }
+            for (int i = 0; i < words.Length; i++)
+            {
+                int wordByte = System.Text.Encoding.GetEncoding("euc-jp").GetBytes(words[i].ToString()).Length;
+                currentLineByte += wordByte;
+                if (currentLineByte > MaxByteInOneLine)
+                {
+                    result += "\n";
+                    currentLineByte = 0;
+                    messageText.alignment = TextAnchor.UpperLeft;
+                }
+                result += words[i].ToString();
+            }
+
+            return result;
         }
     }
 }
