@@ -29,3 +29,5 @@ webSocketServer.on ('connection', (webSocket) => {
     console.log(`close connection. clients: ${webSocketServer.count()}`);
   })
 });
+
+console.log('stand by ready!');
