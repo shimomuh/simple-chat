@@ -95,7 +95,7 @@ namespace SimpleChat.UI.View
             // SerializeField を使ってキャッシュしたかったが、 clone しているので instanceId が異なるので使えない
             // 同様の理由で FindWithTag による参照もできないのでやむなし
             clonedMessageView.GetChild(2).GetComponent<Text>().text = message;
-            clonedMessageView.GetChild(3).GetComponent<Text>().text = CurrentTime();
+            clonedMessageView.GetChild(2).GetChild(1).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
             // see: https://docs.unity3d.com/ScriptReference/Transform.SetParent.html
             clonedMessageView.SetParent(chatLogContent, false);

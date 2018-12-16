@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SimpleChat
+namespace SimpleChat.UI.View
 {
     public class AutoInvisibleBarScrollRect : ScrollRect
     {
