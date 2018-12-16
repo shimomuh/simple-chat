@@ -113,10 +113,11 @@ namespace SimpleChat.UI.View
         /// <param name="clonedMessageView">Cloned message view.</param>
         private void AdjustViewLayout(RectTransform clonedMessageView)
         {
-            float h = clonedMessageView.GetChild(2).GetComponent<Text>().preferredHeight;
+            float h1 = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
+            float h2 = clonedMessageView.GetChild(2).GetComponent<Text>().preferredHeight;
             float w = clonedMessageView.sizeDelta.x;
-            float padding = clonedMessageView.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h + padding);
+            float padding = clonedMessageView.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta.y * 2;
+            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h1 + h2 + padding);
         }
 
         /// <summary>
