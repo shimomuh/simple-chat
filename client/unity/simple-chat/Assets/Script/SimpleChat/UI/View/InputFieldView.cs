@@ -18,14 +18,14 @@ namespace SimpleChat.UI.View
         private RectTransform myMessageView;
         [SerializeField]
         private RectTransform chatLogContent;
+        [SerializeField]
+        private uint MaxByteInOneLine;
 
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
         private Text messageText;
 
         public Action<string> InputMessageCallback = null;
-
-        private static readonly int MaxByteInOneLine = 24;
 
         #region LifeCycleMethods
 
