@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,8 @@ namespace SimpleChat.UI.View
         private RectTransform myMessageView;
         [SerializeField]
         private RectTransform chatLogContent;
+        [SerializeField]
+        private ScrollRect scrollRect;
         [SerializeField]
         private uint MaxByteInOneLine;
 
@@ -89,6 +92,35 @@ namespace SimpleChat.UI.View
             SetLayoutOrder(clonedMessageView);
             BeVisibleView(clonedMessageView);
             ResetInputField();
+            ScrollBottom();
+        }
+
+        /// <summary>
+        /// 1フレーム後にスクロール位置を一番下に指定する
+        /// NOTE: View を追加したタイミングだと ScrollBar の正規化した位置が
+        ///       正しく反映されていないため 1 フレームずらしている
+        /// </summary>
+        private void ScrollBottom()
+        {
+            StartCoroutine(DelayMethod(1, () =>
+            {
+                scrollRect.verticalNormalizedPosition = 0f;
+            }));
+        }
+
+        /// <summary>
+        /// 渡された処理を指定時間後に実行する
+        /// </summary>
+        /// <param name="delayFrameCount"></param>
+        /// <param name="action">実行したい処理</param>
+        /// <returns></returns>
+        private IEnumerator DelayMethod(int delayFrameCount, Action action)
+        {
+            for (var i = 0; i < delayFrameCount; i++)
+            {
+                yield return null;
+            }
+            action();
         }
 
         /// <summary>
