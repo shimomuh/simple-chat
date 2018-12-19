@@ -1,8 +1,10 @@
 ﻿using System;
+using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Model;
 using UnityEngine;
 using WebSocketSharp;
 
-namespace SimpleChat.UI
+namespace SimpleChat.Application
 {
     /// <summary>
     /// [Singleton] Chat をするための HttpClient
@@ -26,7 +28,8 @@ namespace SimpleChat.UI
         #endregion
 
         private WebSocket ws;
-        public Action<string> ReceiveMessageCallback;
+        private User sendUser;
+        public Action<Message> ReceiveMessageCallback;
 
         private HttpClient()
         {
@@ -39,25 +42,26 @@ namespace SimpleChat.UI
             ws.OnClose += OnClose;
         }
 
+        public void SetSendUser(User user)
+        {
+            this.sendUser = user;
+        }
+
         public void TryConnect()
         {
             ws.Connect();
         }
 
-        public void OnOpen(object sender, System.EventArgs e)
+        public void OnOpen(object sender, EventArgs e)
         {
             Debug.Log("WebSocket Open");
         }
 
         public void OnMessage(object sender, MessageEventArgs e)
         {
-            string message = System.Text.Encoding.UTF8.GetString(e.RawData);
+            string jsonString = System.Text.Encoding.UTF8.GetString(e.RawData);
+            Message message = JsonUtility.FromJson<Message>(jsonString);
             ReceiveMessageCallback(message);
-        }
-
-        public void SetReceiveMessageCallback(Action<string> callback)
-        {
-            ReceiveMessageCallback = callback;
         }
 
         public void OnError(object sender, ErrorEventArgs e)
@@ -70,10 +74,11 @@ namespace SimpleChat.UI
             Debug.Log("WebSocket Close");
         }
 
-        public void Send(string message)
+        public void Send(string value)
         {
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
-            ws.Send(data);
+            Message message = new Message(sendUser, value);
+            string jsonData = message.ToJson();
+            ws.Send(jsonData);
         }
 
         public void Destroy()
