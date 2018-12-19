@@ -4,13 +4,31 @@ using WebSocketSharp;
 
 namespace SimpleChat.UI
 {
-    // TODO: シングルトン化
+    /// <summary>
+    /// [Singleton] Chat をするための HttpClient
+    /// Note: 二重送信を防ぐためシングルトン化
+    /// </summary>
     public class HttpClient
     {
+        #region singleton
+
+        private static HttpClient instance;
+        public static HttpClient Instance
+        {
+            get {
+                if (instance == null) {
+                    instance = new HttpClient();
+                }
+                return instance;
+            }
+        }
+
+        #endregion
+
         private WebSocket ws;
         public Action<string> ReceiveMessageCallback;
 
-        public HttpClient()
+        private HttpClient()
         {
             // TODO: プロトコルを wss にしたい see: https://github.com/sta/websocket-sharp
             // TODO: 定数化。外だし
