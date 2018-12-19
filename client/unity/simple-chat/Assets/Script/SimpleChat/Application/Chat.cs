@@ -1,12 +1,13 @@
 ﻿using System.Threading;
-using SimpleChat.UI;
+using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Model;
 using SimpleChat.UI.View;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace SimpleChat.Application
 {
-    public class ChatApplication : MonoBehaviour
+    public class Chat : MonoBehaviour
     {
         [SerializeField]
         private InputField inputField;
@@ -17,30 +18,52 @@ namespace SimpleChat.Application
 
         private HttpClient httpClient;
 
-        void Awake()
-        {
+        [SerializeField]
+        private uint userId;
 
+        [SerializeField]
+        private string userName;
+
+        [SerializeField]
+        private string userThumbnailUrl;
+
+        private User user;
+
+        private void Awake()
+        {
             inputFieldView = inputField.GetComponent<InputFieldView>();
 
             // メインスレッドを表す context
             context = SynchronizationContext.Current;
+            CreateUser();
 
             httpClient = HttpClient.Instance;
+            httpClient.SetSendUser(user);
             httpClient.ReceiveMessageCallback = ReceiveMessageCallback;
             httpClient.TryConnect();
 
             inputFieldView.InputMessageCallback = SendToMessage;
         }
 
+        private void CreateUser()
+        {
+            if (user == null) {
+                user = new User(userId, userName, userThumbnailUrl); 
+            }
+        }
+
         private void SendToMessage(string message) {
             httpClient.Send(message);
         }
 
-        public void ReceiveMessageCallback(string message)
+        public void ReceiveMessageCallback(Message message)
         {
              // メインスレッドに処理を戻す
             context.Post(__ => {
-                inputFieldView.ReceiveMessage(message);
+                if (user.id == message.user.id) {
+                    return;
+                }
+                inputFieldView.ReceiveMessage(message.value);
             }, null);
         }
 
