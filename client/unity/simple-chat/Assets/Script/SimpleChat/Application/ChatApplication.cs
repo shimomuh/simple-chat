@@ -25,7 +25,7 @@ namespace SimpleChat.Application
             // メインスレッドを表す context
             context = SynchronizationContext.Current;
 
-            httpClient = new HttpClient();
+            httpClient = HttpClient.Instance;
             httpClient.ReceiveMessageCallback = ReceiveMessageCallback;
             httpClient.TryConnect();
 
