@@ -10,16 +10,16 @@ namespace SimpleChat.Application
     /// [Singleton] Chat をするための HttpClient
     /// Note: 二重送信を防ぐためシングルトン化
     /// </summary>
-    public class HttpClient
+    public class WebSocketClient
     {
         #region singleton
 
-        private static HttpClient instance;
-        public static HttpClient Instance
+        private static WebSocketClient instance;
+        public static WebSocketClient Instance
         {
             get {
                 if (instance == null) {
-                    instance = new HttpClient();
+                    instance = new WebSocketClient();
                 }
                 return instance;
             }
@@ -31,7 +31,7 @@ namespace SimpleChat.Application
         private User sendUser;
         public Action<Message> ReceiveMessageCallback;
 
-        private HttpClient()
+        private WebSocketClient()
         {
             // TODO: プロトコルを wss にしたい see: https://github.com/sta/websocket-sharp
             // TODO: 定数化。外だし

@@ -16,7 +16,7 @@ namespace SimpleChat.Application
 
         private SynchronizationContext context;
 
-        private HttpClient httpClient;
+        private WebSocketClient webSocketClient;
 
         [SerializeField]
         private uint userId;
@@ -37,10 +37,10 @@ namespace SimpleChat.Application
             context = SynchronizationContext.Current;
             CreateUser();
 
-            httpClient = HttpClient.Instance;
-            httpClient.SetSendUser(user);
-            httpClient.ReceiveMessageCallback = ReceiveMessageCallback;
-            httpClient.TryConnect();
+            webSocketClient = WebSocketClient.Instance;
+            webSocketClient.SetSendUser(user);
+            webSocketClient.ReceiveMessageCallback = ReceiveMessageCallback;
+            webSocketClient.TryConnect();
 
             inputFieldView.InputMessageCallback = SendToMessage;
         }
@@ -53,7 +53,7 @@ namespace SimpleChat.Application
         }
 
         private void SendToMessage(string message) {
-            httpClient.Send(message);
+            webSocketClient.Send(message);
         }
 
         public void ReceiveMessageCallback(Message message)
@@ -69,7 +69,7 @@ namespace SimpleChat.Application
 
         public void Destroy()
         {
-            httpClient.Destroy();
+            webSocketClient.Destroy();
         }
     }
 }
