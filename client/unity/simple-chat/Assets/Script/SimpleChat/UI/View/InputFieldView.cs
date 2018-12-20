@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ namespace SimpleChat.UI.View
     /// 入力を受けて ScrollView にメッセージを出力する。
     /// 外部からの入力も受け付けて ScrollView にメッセージとして表示できる。
     /// </summary>
+    // TODO: Presenter に分けたい
     public class InputFieldView : MonoBehaviour
     {
         [SerializeField]
@@ -27,6 +29,7 @@ namespace SimpleChat.UI.View
         private RectTransform clonedMessageRectTransform;
         private InputField inputField;
         private Text messageText;
+        private User user;
 
         public Action<string> InputMessageCallback = null;
 
@@ -55,15 +58,22 @@ namespace SimpleChat.UI.View
             string message = input.textComponent.text
                                   ;
             // 全角だろうが空白のみは許容しない
-            if (message.Trim().Equals(string.Empty)) {
+            if (message.Trim().Equals(string.Empty))
+            {
                 return;
             }
 
-            AddMessageView(myMessageView, message);
+            AddMessageView(myMessageView, new Message(user, message));
             if (InputMessageCallback != null)
             {
                 InputMessageCallback(message);
             }
+        }
+
+        public void SetSender(User user)
+        {
+            if (this.user != null) { return; }
+            this.user = user;
         }
 
         /// <summary>
@@ -71,7 +81,7 @@ namespace SimpleChat.UI.View
         /// 主に、外部からの入力を受け付けるために利用する。
         /// </summary>
         /// <param name="message">Message.</param>
-        public void ReceiveMessage(string message)
+        public void ReceiveMessage(Message message)
         {
             AddMessageView(otherMessageView, message);
         }
@@ -81,7 +91,7 @@ namespace SimpleChat.UI.View
         /// </summary>
         /// <param name="messageView">Message view.</param>
         /// <param name="message">Message.</param>
-        private void AddMessageView(RectTransform messageView, string message)
+        private void AddMessageView(RectTransform messageView, Message message)
         {
             RectTransform clonedMessageView = Instantiate<RectTransform>(messageView);
 
@@ -128,10 +138,15 @@ namespace SimpleChat.UI.View
         /// </summary>
         /// <param name="clonedMessageView">Cloned message view.</param>
         /// <param name="message">Message.</param>
-        private void SetTextInContent(RectTransform clonedMessageView, string message)
+        private void SetTextInContent(RectTransform clonedMessageView, Message message)
         {
             messageText = clonedMessageView.GetChild(2).GetComponent<Text>();
-            messageText.text = AutoInsertNewLine(message);
+            messageText.text = AutoInsertNewLine(message.value);
+
+            clonedMessageView.GetChild(1).GetComponent<Text>().text = message.user.name;
+
+            StartCoroutine(DownloadImage(clonedMessageView.GetChild(0).GetComponent<RawImage>(), message.user.thumbnailUrl));
+
             clonedMessageView.GetChild(2).GetChild(1).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
             // see: https://docs.unity3d.com/ScriptReference/Transform.SetParent.html
@@ -139,6 +154,19 @@ namespace SimpleChat.UI.View
 
         }
 
+        /// <summary>
+        /// 引数の url 文字列から画像をダウンロードして表示する
+        /// </summary>
+        /// <returns>The image.</returns>
+        /// <param name="image">Image.</param>
+        /// <param name="url">URL.</param>
+        private IEnumerator DownloadImage(RawImage image, string url)
+        {
+            WWW www = new WWW(url);
+            yield return www;
+            image.texture = www.textureNonReadable;
+            //image.SetNativeSize();
+        }
         /// <summary>
         /// レイアウトを整える
         /// </summary>

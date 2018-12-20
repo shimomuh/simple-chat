@@ -42,6 +42,7 @@ namespace SimpleChat.Application
             webSocketClient.ReceiveMessageCallback = ReceiveMessageCallback;
             webSocketClient.TryConnect();
 
+            inputFieldView.SetSender(user);
             inputFieldView.InputMessageCallback = SendToMessage;
         }
 
@@ -63,7 +64,7 @@ namespace SimpleChat.Application
                 if (user.id == message.user.id) {
                     return;
                 }
-                inputFieldView.ReceiveMessage(message.value);
+                inputFieldView.ReceiveMessage(message);
             }, null);
         }
 
