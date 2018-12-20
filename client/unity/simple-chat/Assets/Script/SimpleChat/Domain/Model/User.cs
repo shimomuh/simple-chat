@@ -15,9 +15,9 @@ namespace SimpleChat.Domain.Model
 
         public User(uint id, string name, string thumbnailUrl)
         {
-            id = this.id;
-            name = this.name;
-            thumbnailUrl = this.thumbnailUrl;
+            this.id = id;
+            this.name = name;
+            this.thumbnailUrl = thumbnailUrl;
         }
     }
 }
