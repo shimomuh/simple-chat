@@ -1,5 +1,5 @@
 ﻿using System;
-using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Service;
 using SimpleChat.Domain.Model;
 using UnityEngine;
 using WebSocketSharp;

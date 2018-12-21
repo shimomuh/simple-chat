@@ -1,7 +1,7 @@
 ﻿using System.Threading;
-using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Service;
 using SimpleChat.Domain.Model;
-using SimpleChat.UI.View;
+using SimpleChat.UI.Presenter;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +12,7 @@ namespace SimpleChat.Application
         [SerializeField]
         private InputField inputField;
 
-        private InputFieldView inputFieldView;
+        private InputFieldPresenter inputFieldPresenter;
 
         private SynchronizationContext context;
 
@@ -31,7 +31,7 @@ namespace SimpleChat.Application
 
         private void Awake()
         {
-            inputFieldView = inputField.GetComponent<InputFieldView>();
+            inputFieldPresenter = inputField.GetComponent<InputFieldPresenter>();
 
             // メインスレッドを表す context
             context = SynchronizationContext.Current;
@@ -42,8 +42,8 @@ namespace SimpleChat.Application
             webSocketClient.ReceiveMessageCallback = ReceiveMessageCallback;
             webSocketClient.TryConnect();
 
-            inputFieldView.SetSender(user);
-            inputFieldView.InputMessageCallback = SendToMessage;
+            inputFieldPresenter.SetSender(user);
+            inputFieldPresenter.InputMessageCallback = SendToMessage;
         }
 
         private void CreateUser()
@@ -64,7 +64,7 @@ namespace SimpleChat.Application
                 if (user.id == message.user.id) {
                     return;
                 }
-                inputFieldView.ReceiveMessage(message);
+                inputFieldPresenter.ReceiveMessage(message);
             }, null);
         }
 

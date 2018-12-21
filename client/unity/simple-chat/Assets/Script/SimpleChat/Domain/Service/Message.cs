@@ -2,7 +2,7 @@
 using SimpleChat.Domain.Model;
 using UnityEngine;
 
-namespace SimpleChat.Domain.BusinessModel
+namespace SimpleChat.Domain.Service
 {
     [Serializable]
     public class Message

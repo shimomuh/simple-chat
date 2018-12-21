@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections;
-using SimpleChat.Domain.BusinessModel;
+using SimpleChat.Domain.Service;
 using SimpleChat.Domain.Model;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SimpleChat.UI.View
+namespace SimpleChat.UI.Presenter
 {
     /// <summary>
     /// InputField に付与されるクラス。
     /// 入力を受けて ScrollView にメッセージを出力する。
     /// 外部からの入力も受け付けて ScrollView にメッセージとして表示できる。
+    /// NOTE: Presenter に限り UnityEngine.UI のクラスと区別するため
+    ///       意図的に Presenter の接尾詞をつける。
     /// </summary>
-    // TODO: Presenter に分けたい
-    public class InputFieldView : MonoBehaviour
+    public class InputFieldPresenter : MonoBehaviour
     {
         [SerializeField]
         private RectTransform otherMessageView;
@@ -70,6 +71,10 @@ namespace SimpleChat.UI.View
             }
         }
 
+        /// <summary>
+        /// 送信者を設定する
+        /// </summary>
+        /// <param name="user">User.</param>
         public void SetSender(User user)
         {
             if (this.user != null) { return; }
