@@ -4,6 +4,7 @@ using SimpleChat.Domain.Service;
 using SimpleChat.Domain.Model;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace SimpleChat.UI.Presenter
 {
@@ -31,6 +32,7 @@ namespace SimpleChat.UI.Presenter
         private InputField inputField;
         private Text messageText;
         private User user;
+        private List<TextureAdapter> textureAdapters = new List<TextureAdapter>();
 
         public Action<string> InputMessageCallback = null;
 
@@ -150,7 +152,7 @@ namespace SimpleChat.UI.Presenter
 
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message.user.name;
 
-            StartCoroutine(DownloadImage(clonedMessageView.GetChild(0).GetComponent<RawImage>(), message.user.thumbnailUrl));
+            StartCoroutine(SetTexture(message.user.thumbnailUrl, clonedMessageView.GetChild(0).GetComponent<RawImage>()));
 
             clonedMessageView.GetChild(2).GetChild(1).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
@@ -160,18 +162,27 @@ namespace SimpleChat.UI.Presenter
         }
 
         /// <summary>
-        /// 引数の url 文字列から画像をダウンロードして表示する
+        /// 引数に渡した RawImage に url から fetch した画像を Texture として貼り付ける。
         /// </summary>
-        /// <returns>The image.</returns>
-        /// <param name="image">Image.</param>
         /// <param name="url">URL.</param>
-        private IEnumerator DownloadImage(RawImage image, string url)
+        /// <param name="rawImage">Raw image.</param>
+        private IEnumerator SetTexture(string url, RawImage rawImage)
         {
-            WWW www = new WWW(url);
-            yield return www;
-            image.texture = www.textureNonReadable;
-            //image.SetNativeSize();
+            if (user == null) {
+                throw new NullReferenceException();
+            }
+            var textureAdapter = textureAdapters.Find(i => i.Identifier == user.id);
+            if (textureAdapter == null)
+            {
+                textureAdapter = new TextureAdapter(user.id, rawImage);
+                // Fetch メソッドは内部で非同期処理を行うためその同期処理を待つ意味で IEnumerator なメソッドとして実装した。
+                yield return StartCoroutine(textureAdapter.Fetch(url));
+                textureAdapters.Add(textureAdapter);
+            } else {
+                textureAdapter.Adapt(rawImage);
+            }
         }
+
         /// <summary>
         /// レイアウトを整える
         /// </summary>
