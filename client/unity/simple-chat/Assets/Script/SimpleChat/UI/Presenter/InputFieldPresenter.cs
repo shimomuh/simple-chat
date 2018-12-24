@@ -32,7 +32,7 @@ namespace SimpleChat.UI.Presenter
         private InputField inputField;
         private Text messageText;
         private User user;
-        private List<TextureAdapter> textureAdapters = new List<TextureAdapter>();
+        private List<CachedTexture> cachedTextures = new List<CachedTexture>();
 
         public Action<string> InputMessageCallback = null;
 
@@ -171,15 +171,16 @@ namespace SimpleChat.UI.Presenter
             if (user == null) {
                 throw new NullReferenceException();
             }
-            var textureAdapter = textureAdapters.Find(i => i.Identifier == user.id);
-            if (textureAdapter == null)
+            var cachedTexture = cachedTextures.Find(i => i.Identifier == user.id);
+            if (cachedTexture == null)
             {
-                textureAdapter = new TextureAdapter(user.id, rawImage);
+                cachedTexture = new CachedTexture(user.id);
                 // Fetch メソッドは内部で非同期処理を行うためその同期処理を待つ意味で IEnumerator なメソッドとして実装した。
-                yield return StartCoroutine(textureAdapter.Fetch(url));
-                textureAdapters.Add(textureAdapter);
+                yield return StartCoroutine(cachedTexture.Fetch(url));
+                cachedTexture.AdaptTo(rawImage);
+                cachedTextures.Add(cachedTexture);
             } else {
-                textureAdapter.Adapt(rawImage);
+                cachedTexture.AdaptTo(rawImage);
             }
         }
 
