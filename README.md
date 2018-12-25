@@ -18,5 +18,6 @@ brew install ndenv
 ndenv install v10.5.0
 cd server/nodejs
 npm i
+# see README.md
 node server.js
 ```

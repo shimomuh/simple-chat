@@ -1,6 +1,19 @@
-const WebSocket = require ('ws').Server;
+// https://www.npmjs.com/package/ws
+//
+const https = require('https');
+const fs = require('fs');
+const WebSocket = require('ws').Server;
 
-const webSocketServer = new WebSocket ({ port: 3000 });
+const server = https.createServer({
+    key: fs.readFileSync("public-static-directory/private-key.pem"),
+    cert: fs.readFileSync("public-static-directory/public-key.crt")
+}, (req, res) => {
+    // ダミーリクエスト処理
+    res.writeHead(200);
+    res.end("All glory to WebSockets!\n");
+}).listen(8080);
+
+const webSocketServer = new WebSocket ({ server });
 
 webSocketServer.broadcast = (data) => {
   webSocketServer.clients.forEach((client) => {

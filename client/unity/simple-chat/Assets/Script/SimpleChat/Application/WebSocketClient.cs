@@ -30,12 +30,11 @@ namespace SimpleChat.Application
         private WebSocket ws;
         private User sendUser;
         public Action<Message> ReceiveMessageCallback;
+        private string endpoint = "wss://localhost:8080/";
 
         private WebSocketClient()
         {
-            // TODO: プロトコルを wss にしたい see: https://github.com/sta/websocket-sharp
-            // TODO: 定数化。外だし
-            ws = new WebSocket("ws://localhost:3000/");
+            ws = new WebSocket(endpoint);
             ws.OnOpen += OnOpen;
             ws.OnMessage += OnMessage;
             ws.OnError += OnError;
