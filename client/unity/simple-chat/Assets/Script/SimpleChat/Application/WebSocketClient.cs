@@ -3,11 +3,12 @@ using SimpleChat.Domain.Service;
 using SimpleChat.Domain.Model;
 using UnityEngine;
 using WebSocketSharp;
+using System.Collections;
 
 namespace SimpleChat.Application
 {
     /// <summary>
-    /// [Singleton] Chat をするための HttpClient
+    /// [Singleton] Chat をするための WebSocketSecureClient
     /// Note: 二重送信を防ぐためシングルトン化
     /// </summary>
     public class WebSocketClient
@@ -30,10 +31,20 @@ namespace SimpleChat.Application
         private WebSocket ws;
         private User sendUser;
         public Action<Message> ReceiveMessageCallback;
+        public Action ConnectFailureCallback;
+        public Action ConnectSuccessCallback;
+        public Action ConnectRetryCallback;
+        public Action<ErrorEventArgs> ConnectErrorCallback;
         private string endpoint = "wss://localhost:8080/";
+        private uint retry;
+        public uint Retry { get { return retry; } }
+        private bool isAbortTryConnect;
+        public bool IsAbortTryConnect { get { return isAbortTryConnect; } }
 
         private WebSocketClient()
         {
+            Debug.Log("Start");
+            retry = 0;
             ws = new WebSocket(endpoint);
             ws.OnOpen += OnOpen;
             ws.OnMessage += OnMessage;
@@ -48,12 +59,25 @@ namespace SimpleChat.Application
 
         public void TryConnect()
         {
+            retry++;
             ws.Connect();
+        }
+
+        public void ResetRetry()
+        {
+            retry = 0;
+        }
+
+        public void AbortTryConnect()
+        {
+            isAbortTryConnect = true;
+            ResetRetry();
         }
 
         public void OnOpen(object sender, EventArgs e)
         {
-            Debug.Log("WebSocket Open");
+            ResetRetry();
+            ConnectSuccessCallback();
         }
 
         public void OnMessage(object sender, MessageEventArgs e)
@@ -65,12 +89,12 @@ namespace SimpleChat.Application
 
         public void OnError(object sender, ErrorEventArgs e)
         {
-            Debug.Log("WebSocket Error Message: " + e.Message);
+            ConnectErrorCallback(e);
         }
 
         public void OnClose(object sender, CloseEventArgs e)
         {
-            Debug.Log("WebSocket Close");
+            ConnectFailureCallback();
         }
 
         public void Send(string value)
