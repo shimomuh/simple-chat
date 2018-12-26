@@ -4,6 +4,10 @@
 
 ![](./src/sample.gif)
 
+### Loading
+
+![](./src/loading.gif)
+
 ### Selected Architecture
 
 DDD. Onion Architecture.
