@@ -152,7 +152,7 @@ namespace SimpleChat.UI.Presenter
 
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message.user.name;
 
-            StartCoroutine(SetTexture(message.user.thumbnailUrl, clonedMessageView.GetChild(0).GetComponent<RawImage>()));
+            StartCoroutine(SetTexture(message.user.id, message.user.thumbnailUrl, clonedMessageView.GetChild(0).GetComponent<RawImage>()));
 
             clonedMessageView.GetChild(2).GetChild(1).GetComponent<Text>().text = CurrentTime();
             // 第二引数を true にすると、 scale が resize されてしまうので false に。
@@ -166,15 +166,12 @@ namespace SimpleChat.UI.Presenter
         /// </summary>
         /// <param name="url">URL.</param>
         /// <param name="rawImage">Raw image.</param>
-        private IEnumerator SetTexture(string url, RawImage rawImage)
+        private IEnumerator SetTexture(uint id, string url, RawImage rawImage)
         {
-            if (user == null) {
-                throw new NullReferenceException();
-            }
-            var cachedTexture = cachedTextures.Find(i => i.Identifier == user.id);
+            var cachedTexture = cachedTextures.Find(i => i.Identifier == id);
             if (cachedTexture == null)
             {
-                cachedTexture = new CachedTexture(user.id);
+                cachedTexture = new CachedTexture(id);
                 // Fetch メソッドは内部で非同期処理を行うためその同期処理を待つ意味で IEnumerator なメソッドとして実装した。
                 yield return StartCoroutine(cachedTexture.Fetch(url));
                 cachedTexture.AdaptTo(rawImage);
