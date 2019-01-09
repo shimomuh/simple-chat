@@ -5,6 +5,7 @@ using SimpleChat.Domain.Model;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace SimpleChat.UI.Presenter
 {
@@ -41,12 +42,22 @@ namespace SimpleChat.UI.Presenter
         public void Awake()
         {
             inputField = GetComponent<InputField>();
+        }
 
-            // delegate を使って inputField を渡さなければ日本語に対応するための textComponent を参照できないため
-            // [x] inputField.onEndEdit.AddListener(OnEndEdit)
-            //     void OnEndEdit(string message)
-            // see: https://docs.unity3d.com/ja/2017.4/ScriptReference/UI.InputField-onEndEdit.html
-            inputField.onEndEdit.AddListener(delegate { OnEndEdit(inputField); });
+        public void Update()
+        {
+            // LineType: Multi Line NewLine を採用したため以下のような delegate だと
+            // onEndEdit がフックされないのでやむなく Update メソッドでフックする
+            //
+            // [x] void Awake() {
+            //       i = GetComponent<InputField>()
+            //       i.onEndEdit.AddListener(delegate { OnEndEdit(i.text); });
+            //     }
+            //
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                OnEndEdit(inputField.text);
+            }
         }
 
         #endregion
@@ -54,19 +65,21 @@ namespace SimpleChat.UI.Presenter
         /// <summary>
         /// 入力が完了する(Enter)と、発火する
         /// </summary>
-        /// <param name="input">Input.</param>
-        private void OnEndEdit(InputField input)
+        /// <param name="message">入力された文字</param>
+        private void OnEndEdit(string message)
         {
-            // 日本語に対応するには textComponent から参照しなければならない
-            string message = input.textComponent.text
-                                  ;
             // 全角だろうが空白のみは許容しない
             if (message.Trim().Equals(string.Empty))
             {
                 return;
             }
 
+            // 末尾に改行コードが入る場合は削除する
+            message = Regex.Replace(message, "\n$", "");
+
+
             AddMessageView(myMessageView, new Message(user, message));
+
             if (InputMessageCallback != null)
             {
                 InputMessageCallback(message);
@@ -149,7 +162,6 @@ namespace SimpleChat.UI.Presenter
         {
             messageText = clonedMessageView.GetChild(2).GetComponent<Text>();
             messageText.text = AutoInsertNewLine(message.value);
-
             clonedMessageView.GetChild(1).GetComponent<Text>().text = message.user.name;
 
             StartCoroutine(SetTexture(message.user.id, message.user.thumbnailUrl, clonedMessageView.GetChild(0).GetComponent<RawImage>()));
@@ -187,11 +199,17 @@ namespace SimpleChat.UI.Presenter
         /// <param name="clonedMessageView">Cloned message view.</param>
         private void AdjustViewLayout(RectTransform clonedMessageView)
         {
-            float h1 = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight;
+            // 名前
+            float h1 = clonedMessageView.GetChild(1).GetComponent<Text>().preferredHeight / 2;
+            // テキスト（縦）
             float h2 = clonedMessageView.GetChild(2).GetComponent<Text>().preferredHeight;
+            // テキスト（横）
             float w = clonedMessageView.sizeDelta.x;
+            // 吹き出しのパディング
             float padding = clonedMessageView.GetChild(2).GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h1 + h2 + padding);
+            float margin = Math.Abs(clonedMessageView.GetChild(0).GetComponent<RectTransform>().localPosition.x);
+
+            clonedMessageView.GetComponent<RectTransform>().sizeDelta = new Vector2(w, h1 + h2 + padding + margin * 2);
         }
 
         /// <summary>
