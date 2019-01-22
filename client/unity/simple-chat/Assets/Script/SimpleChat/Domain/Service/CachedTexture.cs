@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace SimpleChat.Domain.Service
@@ -23,24 +23,33 @@ namespace SimpleChat.Domain.Service
 
         /// <summary>
         /// [非同期] 指定の URL から画像をダウンロードしテクスチャとしてキャッシュする
+        /// XXX: UnityWebRequest は Coroutine で動作するためサブスレッドとしてマルチスレッド処理することはできない
+        ///      https://developers.cyberagent.co.jp/blog/archives/6649/
         /// </summary>
         /// <returns>The fetch.</returns>
         /// <param name="url">URL.</param>
         public IEnumerator Fetch(string url)
         {
-            WWW www = new WWW(url);
-            yield return www;
-            Cache(www);
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+            yield return request.SendWebRequest();
+            if (request.isHttpError || request.isNetworkError)
+            {
+                throw new UnityException(request.error);
+            }
+            else
+            {
+                Cache(request.downloadHandler);
+            }
             yield return null;
         }
 
         /// <summary>
-        /// www クラスを通じてテクスチャをキャッシュする
+        /// downloadHandler クラスを通じてテクスチャをキャッシュする
         /// NOTE: バックグラウンドダウンロード完了済みのオブジェクトを利用すること
         /// </summary>
-        /// <param name="www">Www.</param>
-        private void Cache(WWW www) {
-            texture = www.textureNonReadable;
+        /// <param name="downloadHandler">downloadHandler.</param>
+        private void Cache(DownloadHandler downloadHandler) {
+            texture = ((DownloadHandlerTexture)downloadHandler).texture;
         }
 
         /// <summary>
