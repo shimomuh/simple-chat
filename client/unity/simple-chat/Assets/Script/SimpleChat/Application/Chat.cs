@@ -113,7 +113,7 @@ namespace SimpleChat.Application
             {
                 Debug.Log("WebSocket Disconnect");
                 loading.gameObject.SetActive(false);
-                inputField.transform.GetChild(0).GetComponent<Text>().text = "サーバに接続できませんでした";
+                inputField.transform.GetChild(1).GetComponent<Text>().text = "サーバに接続できませんでした";
                 inputField.readOnly = true;
                 webSocketClient.AbortTryConnect();
                 StopCoroutine(Retry());
